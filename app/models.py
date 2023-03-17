@@ -1,21 +1,7 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from app import db
+from flask_login import UserMixin
 
-app = Flask(__name__)
-
-@app.route('/')
-def hello():
-    return 'Hello, World!'
-
-if __name__ == '__main__':
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///language_learning.db'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-    app.run()
-
-db = SQLAlchemy(app)
-
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -23,6 +9,21 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
+    
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)
 
 class TextResource(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -69,3 +70,6 @@ class Quiz(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     text_resource_id = db.Column(db.Integer, db.ForeignKey('text_resource.id'))
+
+    def __repr__(self):
+        return f'<Quiz {self.id}>'

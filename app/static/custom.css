@@ -1,0 +1,70 @@
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+.navbar-custom {
+  background-color: #5a5a5a;
+}
+
+.navbar-custom .navbar-nav .nav-link {
+  color: white;
+}
+
+.navbar-custom .navbar-nav .nav-link:hover {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.navbar-custom .navbar-nav .nav-button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: transparent;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.navbar-custom .navbar-nav .nav-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.flash-message {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+}
+
+.navbar-toggler {
+  display: none;
+}
+
+.navbar-nav {
+  display: flex;
+  flex-direction: row;
+  list-style-type: none; 
+  justify-content: center;
+  align-items: center;
+}
+
+.navbar-nav .nav-item {
+  margin-left: 10px;
+}
+
+.navbar-nav .nav-link {
+  padding: 0;
+}
+
+.navbar-nav .nav-link:last-child {
+  margin-left: auto;
+}
+
+.navbar-nav .nav-button {
+  margin-left: 10px;
+}
+
+.navbar-nav .nav-button:last-child {
+  margin-right: 10px;
+}
+

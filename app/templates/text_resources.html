@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Text Resources{% endblock %}
+
+{% block content %}
+  <h1>Your Text Resources</h1>
+  <a href="{{ url_for('new_text_resource') }}">Upload a New Text Resource</a>
+  <ul>
+    {% for resource in resources %}
+      <li><a href="{{ url_for('view_text_resource', text_resource_id=resource.id) }}">{{ resource.title }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}
