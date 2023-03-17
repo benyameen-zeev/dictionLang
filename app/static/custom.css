@@ -37,7 +37,11 @@ body {
 }
 
 .navbar-toggler {
-  display: none;
+  display: none !important;
+}
+
+.navbar-collapse {
+  flex-grow: 1;
 }
 
 .navbar-nav {
@@ -68,3 +72,7 @@ body {
   margin-right: 10px;
 }
 
+.navbar-nav.ml-auto {
+  display: flex;
+  align-items: center;
+}

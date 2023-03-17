@@ -19,7 +19,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
     
-      <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav">
           <li class="nav-item">
             <button class="nav-button" onclick="location.href='#'">Submit</button>
@@ -33,18 +33,13 @@
           <li class="nav-item">
             <button class="nav-button" onclick="location.href='#'">Learn</button>
           </li>
-        </ul>
-    
-        <ul class="navbar-nav">
           {% if current_user.is_authenticated %}
             <li class="nav-item">
-              <span class="navbar-text">{{ current_user.username }}</span>
+              <span class="navbar-text">user: {{ current_user.username }}</span>
             </li>
             <li class="nav-item logout-btn">
               <button class="nav-button" onclick="location.href='{{ url_for('logout') }}'">Logout</button>
             </li>
-            
-            
           {% else %}
             <li class="nav-item">
               <button class="nav-button" onclick="location.href='{{ url_for('login') }}'">Login</button>
@@ -56,6 +51,7 @@
         </ul>
       </div>
     </nav>
+    
     
     
     
