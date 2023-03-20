@@ -33,7 +33,7 @@ class TextResource(db.Model):
     content = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('text_resources', lazy=True))
-    language = db.Column(db.String(50), nullable=False)
+    language = db.Column(db.String(50), nullable=True)
     rating = db.Column(db.Integer, nullable=False, default=0)
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     votes = db.relationship('Vote', backref='text_resource', lazy='dynamic')
