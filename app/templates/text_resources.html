@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Text Resources{% endblock %}
+{% block title %}Text Resources{% endblock %}d
 
 {% block content %}
 
@@ -21,18 +21,21 @@
   {% for resource, vote_sum in resources %}
   <div class="post-container" style="margin-top:20px;">
     <div class="post-header">
-      <span class="post-title">{{ resource.title }}</span>
+      <span class="post-title"><b> {{ resource.title }} &emsp; </b></span>
       <span class="post-language">{{ resource.language }}</span>
       <span class="post-username">uploaded by {{ resource.user.username }}</span>
       <span class="post-date">{{ resource.formatted_timestamp }}</span>
       <div class="post-vote">
-        <form action="{{ url_for('vote_text_resource', text_resource_id=resource.id, vote_value=1) }}" method="post">
+        <!-- Replace the form here -->
+        <form method="post" data-resource-id="{{ resource.id }}" data-vote-value="1">
           <button type="submit" class="vote-btn">
             <i class="fas fa-chevron-up"></i>
           </button>
         </form>
-        <span class="post-rating">{{ resource.vote_sum if resource.vote_sum else 0 }}</span>
-        <form action="{{ url_for('vote_text_resource', text_resource_id=resource.id, vote_value=-1) }}" method="post">
+        <span class="post-rating">{{ vote_sum if vote_sum else 0 }}</span>
+
+        <!-- Replace the form here -->
+        <form method="post" data-resource-id="{{ resource.id }}" data-vote-value="-1">
           <button type="submit" class="vote-btn">
             <i class="fas fa-chevron-down"></i>
           </button>
@@ -61,5 +64,54 @@
   document.getElementById('language-filter-form').submit();
 });
 </script>
+<script>
+  function buildVoteUrl(resourceID, voteValue) {
+    return "/text_resources/vote/" + resourceID + "/" + voteValue;
+  }
+
+  document.getElementById('{{ filter_form.language.id }}').addEventListener('change', function () {
+    document.getElementById('language-filter-form').submit();
+  });
+
+  document.querySelectorAll('.vote-btn').forEach(function (button) {
+    button.addEventListener('click', function (event) {
+      event.preventDefault();
+
+      var form = button.parentElement;
+      var resourceId = form.dataset.resourceId;
+      var voteValue = form.dataset.voteValue;
+
+      var url = buildVoteUrl(resourceId, voteValue);
+
+      console.log('Resource ID:', resourceId);
+      console.log('Vote Value:', voteValue);
+      console.log('URL:', url);
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', url);
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          var response = JSON.parse(xhr.responseText);
+          console.log('Response:', response);
+          if (response.error) {
+            console.error("AJAX request failed:", xhr.status, response.error);
+          } else {
+            var postRatingElement = form.parentElement.querySelector('.post-rating');
+            postRatingElement.textContent = response.vote_sum;
+          }
+        } else {
+          console.error("AJAX request failed:", xhr.status);
+        }
+      };
+
+      var formData = new FormData(form);
+      var formBody = new URLSearchParams(formData).toString();
+      xhr.send(formBody);
+    });
+  });
+</script>
+
 
 {% endblock %}
