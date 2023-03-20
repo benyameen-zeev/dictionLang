@@ -3,11 +3,63 @@
 {% block title %}Text Resources{% endblock %}
 
 {% block content %}
-  <h1>Your Text Resources</h1>
-  <a href="{{ url_for('new_text_resource') }}">Upload a New Text Resource</a>
-  <ul>
-    {% for resource in resources %}
-      <li><a href="{{ url_for('view_text_resource', text_resource_id=resource.id) }}">{{ resource.title }}</a></li>
-    {% endfor %}
-  </ul>
+
+ <div class="posts-wrapper">
+  <h1>Text Resources</h1>
+
+  <a href="{{ url_for('new_text_resource') }}" class="upload-text-btn">Upload Text</a>
+
+
+
+  <form method="POST" action="{{ url_for('text_resources') }}" id="language-filter-form" class="filter-form">
+     {{ filter_form.hidden_tag() }}
+     {{ filter_form.language.label }} {{ filter_form.language }}
+
+   </form>
+
+  {% if resources %}
+  {% for resource, vote_sum in resources %}
+    <div class="post-container">
+      <div class="post-header">
+        <span class="post-title">{{ resource.title }}</span>
+        <span class="post-language">{{ resource.language }}</span>
+        <span class="post-username">uploaded by {{ resource.user.username }}</span>
+        <span class="post-date">{{ resource.formatted_timestamp }}</span>
+        <span class="post-rating">{{ resource.vote_sum if resource.vote_sum else 0 }}</span>
+        <div class="post-vote">
+                <form action="{{ url_for('vote_text_resource', text_resource_id=resource.id, vote_value=1) }}" method="post">
+                  <button type="submit" class="vote-btn">
+                    <i class="fas fa-chevron-up"></i>
+                  </button>
+                </form>
+                <form action="{{ url_for('vote_text_resource', text_resource_id=resource.id, vote_value=-1) }}" method="post">
+                  <button type="submit" class="vote-btn">
+                    <i class="fas fa-chevron-down"></i>
+                  </button>
+                </form>
+              </div>
+
+      </div>
+      <div class="post-content">
+        {% if resource.content|length > 1000 %}
+          <p>{{ resource.content[:1000] }}...</p>
+          <a href="{{ url_for('view_text_resource', text_resource_id=resource.id) }}">Read more</a>
+        {% else %}
+          <p>{{ resource.content }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+  {% endfor %}
+
+  {% else %}
+    <p>No text resources found. Upload a new text resource to get started!</p>
+  {% endif %}
+   </div>
+   <script>
+     document.getElementById('{{ filter_form.language.id }}').addEventListener('change', function() {
+  document.getElementById('language-filter-form').submit();
+});
+</script>
+
 {% endblock %}

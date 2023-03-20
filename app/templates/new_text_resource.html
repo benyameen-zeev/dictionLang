@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}Upload Text Resource{% endblock %}
+{% block title %}New Text Resource{% endblock %}
 
 {% block content %}
-  <h1>Upload a New Text Resource</h1>
+  <h1>New Text Resource</h1>
   <form method="POST" action="{{ url_for('new_text_resource') }}">
     {{ form.hidden_tag() }}
-    {{ form.title.label }} {{ form.title() }}<br>
-    {{ form.content.label }} {{ form.content() }}<br>
-    {{ form.submit() }}
+    {{ form.title.label }} {{ form.title }}<br>
+    {{ form.content.label }} {{ form.content }}<br>
+    {{ form.language_choice.label }} {{ form.language_choice }}<br>
+    <input type="submit" value="Submit">
   </form>
 {% endblock %}

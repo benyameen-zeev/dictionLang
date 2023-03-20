@@ -1,5 +1,7 @@
 body {
   font-family: 'Roboto', sans-serif;
+  background-color: #242424;
+  color: #fff;
 }
 
 .navbar-custom {
@@ -47,7 +49,7 @@ body {
 .navbar-nav {
   display: flex;
   flex-direction: row;
-  list-style-type: none; 
+  list-style-type: none;
   justify-content: center;
   align-items: center;
 }
@@ -75,4 +77,80 @@ body {
 .navbar-nav.ml-auto {
   display: flex;
   align-items: center;
+}
+
+.post-container {
+  background-color: #5a5a5a;;
+  border: 1px solid #5a5a5a;;
+  border-radius: 5px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  width:50%;
+}
+
+.post-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.posts-wrapper {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.post-title,
+.post-language,
+.post-username,
+.post-date,
+.post-rating {
+  margin-right: 0.5rem;
+}
+
+.post-vote {
+  display: inline-block;
+}
+
+.post-vote input[type="submit"] {
+  background-color: transparent;
+  border: none;
+  color: #5a5a5a;
+  cursor: pointer;
+}
+
+.upload-text-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #3b3b3b;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+.upload-text-btn:hover {
+  background-color: #4b4b4b;
+}
+
+.vote-btn {
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  margin: 0 3px;
+}
+
+.vote-btn:hover {
+  color: #666;
+}
+
+.post-rating {
+  margin-right: -150px;
 }

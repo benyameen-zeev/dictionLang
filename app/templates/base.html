@@ -6,6 +6,7 @@
     <title>{% block title %} {% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-pzjw8f+ua7Kw1TIq0v8FqFjcJ6pajs/rfdfs3SO+kD4Ck5BdPtF+to8xM6CU5vX8" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSGFpoO/elps3DEujpr20rvzL1UYPjBmNhAMYCrprI9umgrw5f7" crossorigin="anonymous"></script>
@@ -14,21 +15,22 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-custom bg-custom">
-      <a class="navbar-brand" href="{{ url_for('index') }}">dictionLang</a>
+
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-    
+
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <button class="nav-button" onclick="location.href='#'">Submit</button>
+              <a class="nav-button" href="{{ url_for('new_text_resource') }}">Submit</a>
           </li>
           <li class="nav-item">
-            <button class="nav-button" onclick="location.href='#'">My Collections</button>
+            <a href="{{ url_for('my_collections') }}" class="nav-link">My Collections</a>
+
           </li>
           <li class="nav-item">
-            <button class="nav-button" onclick="location.href='#'">Text Bank</button>
+            <button class="nav-button" onclick="location.href='/text_resources'">Text Bank</button>
           </li>
           <li class="nav-item">
             <button class="nav-button" onclick="location.href='#'">Learn</button>
@@ -51,10 +53,10 @@
         </ul>
       </div>
     </nav>
-    
-    
-    
-    
+
+
+
+
 
     <main role="main" class="container">
       <div class="row">

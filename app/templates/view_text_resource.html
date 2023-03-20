@@ -1,7 +1,20 @@
 {% extends 'base.html' %}
 
+{% block title %}{{ text_resource.title }}{% endblock %}
+
 {% block content %}
-  <h2>{{ text_resource.title }}</h2>
-  <pre>{{ text_resource.content }}</pre>
-  <a href="{{ url_for('text_resources') }}">Back to Text Resources</a>
+  <div class="posts-wrapper">
+    <div class="post-container">
+      <div class="post-header">
+        <span class="post-title">{{ text_resource.title }}</span>
+        <span class="post-language">{{ text_resource.language }}</span>
+        <span class="post-username">uploaded by {{ text_resource.user.username }}</span>
+        <span class="post-date">{{ text_resource.formatted_timestamp }}</span>
+        <span class="post-rating">{{ text_resource.vote_sum if text_resource.vote_sum else 0 }}</span>
+      </div>
+      <div class="post-content">
+        <p>{{ text_resource.content }}</p>
+      </div>
+    </div>
+  </div>
 {% endblock %}

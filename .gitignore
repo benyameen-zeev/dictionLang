@@ -14,3 +14,4 @@ instance/
 # SQLite database file (if used)
 *.sqlite
 
+.DS_Store

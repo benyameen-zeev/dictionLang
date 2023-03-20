@@ -1,5 +1,7 @@
 from app import db
 from flask_login import UserMixin
+from datetime import datetime
+
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -9,7 +11,7 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
-    
+
     @property
     def is_active(self):
         return True
@@ -31,9 +33,21 @@ class TextResource(db.Model):
     content = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('text_resources', lazy=True))
+    language = db.Column(db.String(50), nullable=False)
+    rating = db.Column(db.Integer, nullable=False, default=0)
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    votes = db.relationship('Vote', backref='text_resource', lazy='dynamic')
+
+    @property
+    def formatted_timestamp(self):
+        if not self.timestamp:
+            current_app.logger.warning(f"Timestamp missing for TextResource with id {self.id}")
+            return "N/A"
+        return self.timestamp.strftime('%Y-%m-%d')
 
     def __repr__(self):
         return f'<TextResource {self.title}>'
+
 
 class Sentence(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -73,3 +87,9 @@ class Quiz(db.Model):
 
     def __repr__(self):
         return f'<Quiz {self.id}>'
+
+class Vote(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    text_resource_id = db.Column(db.Integer, db.ForeignKey('text_resource.id'), nullable=False)
+    vote_value = db.Column(db.Integer, nullable=False)
