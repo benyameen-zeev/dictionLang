@@ -1,20 +1,46 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ text_resource.title }}{% endblock %}
+{% block title %}View Text Resource{% endblock %}
 
 {% block content %}
-  <div class="posts-wrapper">
+<div class="posts-wrapper">
+    <h1>{{ resource.title }}</h1>
     <div class="post-container">
-      <div class="post-header">
-        <span class="post-title">{{ text_resource.title }}</span>
-        <span class="post-language">{{ text_resource.language }}</span>
-        <span class="post-username">uploaded by {{ text_resource.user.username }}</span>
-        <span class="post-date">{{ text_resource.formatted_timestamp }}</span>
-        <span class="post-rating">{{ text_resource.vote_sum if text_resource.vote_sum else 0 }}</span>
-      </div>
-      <div class="post-content">
-        <p>{{ text_resource.content }}</p>
-      </div>
+        <div class="post-header">
+            <span class="post-title">{{ resource.title }}</span>
+            <span class="post-language">{{ resource.language }}</span>
+            <span class="post-username">uploaded by {{ resource.user.username }}</span>
+            <span class="post-date">{{ resource.formatted_timestamp }}</span>
+        </div>
+        <div class="post-content">
+            <p>{{ resource.content }}</p>
+        </div>
     </div>
-  </div>
+
+    <div class="vocab-container">
+        <div class="vocab-buttons">
+            <button id="vocab-btn">Vocab</button>
+            <button id="study-btn">Study</button>
+            <button id="test-btn">Test</button>
+        </div>
+        <div class="vocab-list" id="vocab-list" style="display: none;">
+            <h3>Vocabulary</h3>
+            <ul>
+                {% for word in words %}
+                <li>{{ word.word }} - {{ word.translation }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('vocab-btn').addEventListener('click', function() {
+        var vocabList = document.getElementById('vocab-list');
+        if (vocabList.style.display === "none") {
+            vocabList.style.display = "block";
+        } else {
+            vocabList.style.display = "none";
+        }
+    });
+</script>
 {% endblock %}

@@ -1,9 +1,9 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, jsonify, abort
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.urls import url_parse
 from app import app, db, login_manager
-from app.models import User, TextResource, Vote
+from app.models import User, TextResource, Vote, WordBank
 from app.forms import RegistrationForm, LoginForm, TextResourceForm, FilterLanguageForm
 from sqlalchemy.sql import func
 
@@ -96,20 +96,29 @@ def text_resources():
 
     return render_template('text_resources.html', resources=resources, filter_form=filter_form)
 
-@app.route('/text_resources/<int:text_resource_id>')
+@app.route('/view_text_resource/<int:text_resource_id>', methods=['GET'])
 @login_required
 def view_text_resource(text_resource_id):
-    text_resource = TextResource.query.get_or_404(text_resource_id)
-    if text_resource.user_id != current_user.id:
-        abort(403)
-    return render_template('view_text_resource.html', text_resource=text_resource)
+    resource = TextResource.query.get(text_resource_id)
+
+    if not resource:
+        flash("Resource not found.", "warning")
+        return redirect(url_for('index'))
+
+    word_objects = WordBank.query.filter_by(collection_id=text_resource_id).all()
+    words = [{'word': word.word, 'translation': word.translation} for word in word_objects]
+
+    return render_template('view_text_resource.html', resource=resource, words=words)
+
+
+from flask import jsonify
 
 @app.route('/text_resources/vote/<int:text_resource_id>/<int:vote_value>', methods=['POST'])
 @login_required
 def vote_text_resource(text_resource_id, vote_value):
     text_resource = TextResource.query.get(text_resource_id)
     if not text_resource:
-        abort(404)
+        return jsonify(error="Text resource not found."), 404
 
     vote = Vote.query.filter_by(user_id=current_user.id, text_resource_id=text_resource_id).first()
 
@@ -123,10 +132,51 @@ def vote_text_resource(text_resource_id, vote_value):
 
     db.session.commit()
 
-    return redirect(url_for('text_resources'))
+    vote_sum = db.session.query(func.sum(Vote.vote_value)).filter(Vote.text_resource_id == text_resource_id).scalar()
+
+    return jsonify(vote_sum=vote_sum if vote_sum else 0)
+
 
 @app.route('/my_collections')
 @login_required
 def my_collections():
     resources = TextResource.query.filter_by(user_id=current_user.id).order_by(TextResource.id.desc()).all()
     return render_template('my_collections.html', resources=resources)
+
+@app.route('/learn/<int:text_resource_id>', methods=['GET'])
+@login_required
+def learn(text_resource_id):
+    resource = TextResource.query.get_or_404(text_resource_id)
+    return render_template('learn.html', resource=resource)
+
+from app.models import WordBank
+
+@app.route('/add_words_to_word_bank', methods=['POST'])
+@login_required
+def add_words_to_word_bank():
+    data = request.get_json()
+
+    words = data.get('words', [])
+    language = data.get('language', '')
+    collection_id = data.get('collection_id', '')
+
+    if not words or not language or not collection_id:
+        return jsonify(error="Missing required data."), 400
+
+    saved_words = []
+    for word in words:
+        # Check if the word already exists in the user's WordBank
+        existing_word = WordBank.query.filter_by(word=word, user_id=current_user.id).first()
+
+        if not existing_word:
+            # Create a new WordBank entry for the word
+            new_word_entry = WordBank(word=word, strength=0, collection_id=collection_id, language=language)
+            new_word_entry.user = current_user
+            new_word_entry.collection = TextResource.query.get(collection_id)
+            db.session.add(new_word_entry)
+            saved_words.append(new_word_entry)
+
+    db.session.commit()
+
+    # Return the saved words as JSON
+    return jsonify(saved_words=[{'word': w.word, 'strength': w.strength} for w in saved_words])

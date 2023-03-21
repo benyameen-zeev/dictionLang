@@ -47,6 +47,9 @@
         <p>{{ resource.content }}</p>
       {% endif %}
     </div>
+    <div class="post-learn">
+      <a href="{{ url_for('view_text_resource', text_resource_id=resource.id) }}" class="learn-btn">Learn</a>
+    </div>
   </div>
 
 
