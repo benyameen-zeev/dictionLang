@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request, jsonify
+from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.urls import url_parse
@@ -104,16 +104,12 @@ def view_text_resource(text_resource_id):
         abort(403)
     return render_template('view_text_resource.html', text_resource=text_resource)
 
-from flask import jsonify
-
-# ...
-
 @app.route('/text_resources/vote/<int:text_resource_id>/<int:vote_value>', methods=['POST'])
 @login_required
 def vote_text_resource(text_resource_id, vote_value):
     text_resource = TextResource.query.get(text_resource_id)
     if not text_resource:
-        return jsonify(error="Text resource not found."), 404
+        abort(404)
 
     vote = Vote.query.filter_by(user_id=current_user.id, text_resource_id=text_resource_id).first()
 
@@ -127,10 +123,7 @@ def vote_text_resource(text_resource_id, vote_value):
 
     db.session.commit()
 
-    vote_sum = db.session.query(func.sum(Vote.vote_value)).filter(Vote.text_resource_id == text_resource_id).scalar()
-
-    return jsonify(vote_sum=vote_sum if vote_sum else 0)
-
+    return redirect(url_for('text_resources'))
 
 @app.route('/my_collections')
 @login_required
