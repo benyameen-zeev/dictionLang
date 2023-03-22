@@ -77,8 +77,11 @@ class Word(db.Model):
     text_resource_id = db.Column(db.Integer, db.ForeignKey('text_resource.id'), nullable=False)
     text_resource = db.relationship('TextResource', back_populates='words')
 
+    __table_args__ = (db.UniqueConstraint('word', 'text_resource_id', name='unique_word_per_text_resource'),)
+
     def __repr__(self):
         return f'<Word {self.word}>'
+
 
 
 class UserWord(db.Model):

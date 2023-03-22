@@ -19,7 +19,8 @@
 
     <div class="vocab-container">
         <div class="vocab-buttons">
-            <button id="vocab-btn">Vocab</button>
+            <button id="vocab-btn" data-id="{{ resource.id }}">Vocab</button>
+
             <button id="study-btn">Study</button>
             <button id="test-btn">Test</button>
         </div>
@@ -34,13 +35,43 @@
     </div>
 </div>
 <script>
-    document.getElementById('vocab-btn').addEventListener('click', function() {
-        var vocabList = document.getElementById('vocab-list');
-        if (vocabList.style.display === "none") {
-            vocabList.style.display = "block";
-        } else {
-            vocabList.style.display = "none";
+function displayVocabulary(words) {
+  const vocabList = document.getElementById("vocab-list");
+  let html = "<h3>Vocabulary</h3><ul>";
+
+  for (const word of words) {
+    html += `<li>${word.word} - ${word.translation}</li>`;
+  }
+
+  html += "</ul>";
+  vocabList.innerHTML = html;
+}
+
+document.getElementById("vocab-btn").addEventListener("click", function () {
+  const vocabList = document.getElementById("vocab-list");
+  const text_resource_id = this.getAttribute("data-id");
+
+  if (vocabList.style.display === "none") {
+    vocabList.style.display = "block";
+
+    fetch(`/generate_vocabulary/${text_resource_id}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error fetching vocabulary");
         }
-    });
+        return response.json();
+      })
+      .then((data) => {
+        displayVocabulary(data.words);
+      })
+      .catch((error) => {
+        console.error("Error fetching vocabulary:", error);
+      });
+  } else {
+    vocabList.style.display = "none";
+  }
+});
+
 </script>
+
 {% endblock %}

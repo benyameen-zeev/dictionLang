@@ -3,9 +3,11 @@ from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.urls import url_parse
 from app import app, db, login_manager
-from app.models import User, TextResource, Vote, WordBank
+from app.models import User, TextResource, Vote, WordBank, Word
 from app.forms import RegistrationForm, LoginForm, TextResourceForm, FilterLanguageForm
 from sqlalchemy.sql import func
+import re
+from collections import Counter
 
 
 @app.route('/')
@@ -151,32 +153,46 @@ def learn(text_resource_id):
 
 from app.models import WordBank
 
-@app.route('/add_words_to_word_bank', methods=['POST'])
+
+# Remove the add_words_to_word_bank route
+@app.route('/generate_vocabulary/<int:text_resource_id>', methods=['GET'])
 @login_required
-def add_words_to_word_bank():
-    data = request.get_json()
+def generate_vocabulary_route(text_resource_id):
+    text_resource = TextResource.query.get(text_resource_id)
+    print("text_resource:", text_resource)
 
-    words = data.get('words', [])
-    language = data.get('language', '')
-    collection_id = data.get('collection_id', '')
+    if not text_resource.words.all():
+        generate_vocabulary(text_resource)
 
-    if not words or not language or not collection_id:
-        return jsonify(error="Missing required data."), 400
+    words = [{'id': word.id, 'word': word.word, 'translation': word.translation, 'language': word.language, 'frequency': word.frequency} for word in text_resource.words]
+    print("words:", words)
 
-    saved_words = []
-    for word in words:
-        # Check if the word already exists in the user's WordBank
-        existing_word = WordBank.query.filter_by(word=word, user_id=current_user.id).first()
+    return jsonify(words=words)
 
-        if not existing_word:
-            # Create a new WordBank entry for the word
-            new_word_entry = WordBank(word=word, strength=0, collection_id=collection_id, language=language)
-            new_word_entry.user = current_user
-            new_word_entry.collection = TextResource.query.get(collection_id)
-            db.session.add(new_word_entry)
-            saved_words.append(new_word_entry)
+
+def generate_vocabulary(text_resource):
+    content = text_resource.content.lower()
+    words = re.findall(r'\b\w+\b', content)
+    word_counts = Counter(words)
+
+    existing_words = {word.word: word for word in text_resource.words}
+
+    for word, frequency in word_counts.items():
+        if word not in existing_words:
+            new_word = Word(word=word, translation="", language=text_resource.language, frequency=frequency, text_resource_id=text_resource.id)
+            db.session.add(new_word)
+        else:
+            existing_words[word].frequency = frequency
 
     db.session.commit()
 
-    # Return the saved words as JSON
-    return jsonify(saved_words=[{'word': w.word, 'strength': w.strength} for w in saved_words])
+    # Add words to the user's WordBank
+    for word in text_resource.words:
+        existing_word_bank_entry = WordBank.query.filter_by(word=word.word, user_id=current_user.id).first()
+        if not existing_word_bank_entry:
+            new_word_bank_entry = WordBank(word=word.word, strength=0, collection_id=text_resource.id, language=text_resource.language)
+            new_word_bank_entry.user = current_user
+            new_word_bank_entry.collection = text_resource
+            db.session.add(new_word_bank_entry)
+
+    db.session.commit()
