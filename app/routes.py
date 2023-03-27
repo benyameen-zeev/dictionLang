@@ -194,5 +194,10 @@ def generate_vocabulary(text_resource):
             new_word_bank_entry.user = current_user
             new_word_bank_entry.collection = text_resource
             db.session.add(new_word_bank_entry)
+        existing_global_word_bank_entry = GlobalWordBank.query.filter_by(word=word.word, language=text_resource.language).first()
+        if not existing_global_word_bank_entry:
+            new_global_word_bank_entry = GlobalWordBank(word=word.word, translation="", language=text_resource.language)
+            db.session.add(new_global_word_bank_entry)
+
 
     db.session.commit()
